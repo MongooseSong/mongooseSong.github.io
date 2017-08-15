@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://mongoosesong.github.io/2017/08/15/js-metaprog/</loc>
+    
+    <lastmod>2017-08-15T06:11:08.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://mongoosesong.github.io/2017/06/13/react-typescript/</loc>
     
     <lastmod>2017-06-13T12:32:06.000Z</lastmod>

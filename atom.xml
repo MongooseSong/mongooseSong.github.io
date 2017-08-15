@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://mongoosesong.github.io/"/>
-  <updated>2017-06-13T12:32:06.000Z</updated>
+  <updated>2017-08-15T06:11:08.000Z</updated>
   <id>https://mongoosesong.github.io/</id>
   
   <author>
@@ -14,6 +14,64 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>JavaScript元编程</title>
+    <link href="https://mongoosesong.github.io/2017/08/15/js-metaprog/"/>
+    <id>https://mongoosesong.github.io/2017/08/15/js-metaprog/</id>
+    <published>2017-08-15T06:06:58.000Z</published>
+    <updated>2017-08-15T06:11:08.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近稍微花了点时间，抛开业务研究了一下技术。这里结合之前学习过Java的一点经验，简单的谈一下元编程。</p>
+<h4 id="1-何谓元编程"><a href="#1-何谓元编程" class="headerlink" title="1.何谓元编程"></a>1.何谓元编程</h4><p>元编程简单说就是“编写代码的代码”，换个高雅解释即是“元编程是编写在运行时操纵语言构件的代码”。</p>
+<p>估计还是有人没看懂，这里再换一种说法解释：<strong>”一门语言拥有对自身的元编程能力就表现在反射“</strong>。大家应该都知道了吧。</p>
+<p>用过Java的都知道反射的好处，它提供了在代码运行阶段动态执行代码的可能。反射和代理可以结合起来使用使得代码更富于动态性。举个例子，常见的Web框架如Spring、Struts等，都是以XML的方式让开发者动态配置执行类和执行方法，在运行期间，再通过反射和代理的方式运行代码。</p>
+<p>有人说，JavaScript本身就是动态语言，为何还要强调元编程呢，不要急，请看我慢慢道来。</p>
+<h4 id="2-JavaScript的代理模式"><a href="#2-JavaScript的代理模式" class="headerlink" title="2.JavaScript的代理模式"></a>2.JavaScript的代理模式</h4><p>在ES6中，引入了代理类，具体细节不多说，这里只描述一下重点。<br>常见的代理是如此写法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var obj = new Proxy(被代理的对象, &#123;</div><div class="line">  get: function (target, key, receiver) &#123;</div><div class="line">    // 返回被代理修改过的值</div><div class="line">    return ...</div><div class="line">  &#125;,</div><div class="line">  set: function (target, key, value, receiver) &#123;</div><div class="line">    // 通过此方法拦截修改值</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">obj.a = 1; // invoke set function</div><div class="line">console.log(obj.b) // invoke get function</div></pre></td></tr></table></figure>
+<p>常见的Proxy拦截的目标列表如下：</p>
+<ul>
+<li><code>get</code> 拦截对象属性的读取</li>
+<li><code>set</code> 拦截对象属性的设置</li>
+<li><code>has</code> 拦截对 in 的操作</li>
+<li><code>delete</code> 拦截对 delete 的操作</li>
+<li><code>ownKeys</code> 主要拦截Object.keys 方法</li>
+<li><code>apply</code> 拦截所有主动调用方法，直接调用、call、apply都会被拦截</li>
+<li><code>construct</code> 拦截 new 操作<br>还有 <code>getOwnPropertyDescriptor</code>、<code>defineProperty</code>、<code>preventExtensions</code>、<code>getPrototypeOf</code>、<code>isExtensible</code>、<code>setPrototypeOf</code>都是对同名的方法进行拦截。</li>
+</ul>
+<h4 id="3-JavaScript的反射"><a href="#3-JavaScript的反射" class="headerlink" title="3. JavaScript的反射"></a>3. JavaScript的反射</h4><p>JavaScript作为一门动态语言，本身其实已经支持了类似Java的Reflect方法，不过在ES6中，仍然提供了Reflect这个反射类。</p>
+<p>本身Reflect不会提供新功能，官方指出，提供Reflect主要目的有以下几点：</p>
+<ol>
+<li>是把ES5中类似Object.defineProperty的方法移入Reflect中</li>
+<li>是重构一些Object已有的方法，使得参数和返回值理解起来更加合理。</li>
+<li>通过Reflect的方式替换掉 in 和 delete 的操作符</li>
+<li><strong>搭配Proxy，无论通过Proxy怎么设置行为，都可以通过Reflect下相应方法来执行原生方法。</strong><br>举个例子：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">var handlers = &#123;</div><div class="line">  get(target,key,context) &#123;</div><div class="line">    console.log( &quot;accessing: &quot;, key );</div><div class="line">    // 这里通过Reflect.get来获取真正的值，不然是循环引用了</div><div class="line">    return Reflect.get(</div><div class="line">      target, key, context</div><div class="line">    );</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>值得留意的一点是，Reflect.ownKeys是一定按照顺序列出可枚举的属性的，顺序如下：<br>i. 首先，如果索引是整数，升序。<br>ii. 其次，根据来根据索引String创建排序。<br>iii. 最后，根据Symbol创建顺序。<br>在 ES6 中，<code>Reflect.ownKeys(..)</code>，<code>Object.getOwnPropertyNames(..)</code>，<code>Object.getOwnPropertySymbols(..)</code>的顺序是可靠可预测的，因此它是安全的。</p>
+<h3 id="4-JavaScript元编程"><a href="#4-JavaScript元编程" class="headerlink" title="4. JavaScript元编程"></a>4. JavaScript元编程</h3><p>刚才所列举的，Proxy和Reflect都是在元级别进行自定义行为（比如属性查找，赋值，枚举，函数调用等），这里也顺便强调一下<strong>包装</strong>和<strong>代理</strong>之间的区别，简单的理解起来，<strong>包装</strong>是新增，<strong>代理</strong>是修改。</p>
+<p>这里举一个例子说明一下元编程几个简单的示例：  </p>
+<h4 id="1-没有找到这样的属性或者方法"><a href="#1-没有找到这样的属性或者方法" class="headerlink" title="1. 没有找到这样的属性或者方法"></a>1. 没有找到这样的属性或者方法</h4><p>我们访问JavaScript对象的某一个属性，有可能因为拼写错误或者不确定是否为空，需要先判断。这里可以通过元编程的方式给出友善的提醒，或者直接赋上一个默认值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">var obj = &#123;</div><div class="line">        a: 1,</div><div class="line">    &#125;,</div><div class="line">    handlers = &#123;</div><div class="line">        get(target,key,context) &#123;</div><div class="line">            if (Reflect.has(target, key)) &#123;</div><div class="line">                return Reflect.get(</div><div class="line">                    target, key, context</div><div class="line">                );</div><div class="line">            &#125;</div><div class="line">            else &#123;</div><div class="line">                throw &quot;No such property/method!&quot;;</div><div class="line">            &#125;</div><div class="line">        &#125;,</div><div class="line">        set(target,key,val,context) &#123;</div><div class="line">            if (Reflect.has(target, key)) &#123;</div><div class="line">                return Reflect.set(</div><div class="line">                    target, key, val, context</div><div class="line">                );</div><div class="line">            &#125;</div><div class="line">            else &#123;</div><div class="line">                throw &quot;No such property/method!&quot;;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    pobj = new Proxy( obj, handlers );</div><div class="line"></div><div class="line">pobj.a = 3;	// 没问题</div><div class="line"></div><div class="line">pobj.b = 4;  // Error: No such property/method!</div><div class="line">pobj.bar();  // Error: No such property/method!</div></pre></td></tr></table></figure>
+<h4 id="2-多重继承"><a href="#2-多重继承" class="headerlink" title="2. 多重继承"></a>2. 多重继承</h4><p>我们可以通过指定Symbol的方式，搭配get方法实现多重继承的功能</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">var obj1 = &#123;</div><div class="line">        name: &quot;obj-1&quot;,</div><div class="line">        foo() &#123;</div><div class="line">            console.log( &quot;obj1.foo:&quot;, this.name );</div><div class="line">        &#125;,</div><div class="line">    &#125;,</div><div class="line">    obj2 = &#123;</div><div class="line">        name: &quot;obj-2&quot;,</div><div class="line">        foo() &#123;</div><div class="line">            console.log( &quot;obj2.foo:&quot;, this.name );</div><div class="line">        &#125;,</div><div class="line">        bar() &#123;</div><div class="line">            console.log( &quot;obj2.bar:&quot;, this.name );</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    handlers = &#123;</div><div class="line">        get(target,key,context) &#123;</div><div class="line">            if (Reflect.has( target, key )) &#123;</div><div class="line">                return Reflect.get(</div><div class="line">                    target, key, context</div><div class="line">                );</div><div class="line">            &#125;</div><div class="line">            // 核心在这里，强制get方法查找原型链数组里面的方法</div><div class="line">            else &#123;</div><div class="line">                for (var P of target[</div><div class="line">                    Symbol.for( &quot;[[Prototype]]&quot; )</div><div class="line">                ]) &#123;</div><div class="line">                    if (Reflect.has( P, key )) &#123;</div><div class="line">                        return Reflect.get(</div><div class="line">                            P, key, context</div><div class="line">                        );</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    obj3 = new Proxy(</div><div class="line">        &#123;</div><div class="line">            name: &quot;obj-3&quot;,</div><div class="line">            baz() &#123;</div><div class="line">                this.foo();</div><div class="line">                this.bar();</div><div class="line">            &#125;</div><div class="line">        &#125;,</div><div class="line">        handlers</div><div class="line">    );</div><div class="line"></div><div class="line">// 创建自定义的原型链</div><div class="line">obj3[ Symbol.for( &quot;[[Prototype]]&quot; ) ] = [</div><div class="line">    obj1, obj2</div><div class="line">];</div><div class="line"></div><div class="line">obj3.baz();</div></pre></td></tr></table></figure>
+<h4 id="3-转变链式操作"><a href="#3-转变链式操作" class="headerlink" title="3. 转变链式操作"></a>3. 转变链式操作</h4><p>通过Proxy的get方法，我们可以把函数执行变成链式的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">var pipe = (function () &#123;</div><div class="line">  return function (value) &#123;</div><div class="line">    var funcStack = [];</div><div class="line">    var oproxy = new Proxy(&#123;&#125; , &#123;</div><div class="line">      get : function (pipeObject, fnName) &#123;</div><div class="line">        if (fnName === &apos;get&apos;) &#123;</div><div class="line">          return funcStack.reduce(function (val, fn) &#123;</div><div class="line">            return fn(val);</div><div class="line">          &#125;,value);</div><div class="line">        &#125;</div><div class="line">        funcStack.push(window[fnName]);</div><div class="line">        return oproxy;</div><div class="line">      &#125;</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    return oproxy;</div><div class="line">  &#125;</div><div class="line">&#125;());</div><div class="line"></div><div class="line">var double = n =&gt; n * 2;</div><div class="line">var pow    = n =&gt; n * n;</div><div class="line">var reverseInt = n =&gt; n.toString().split(&quot;&quot;).reverse().join(&quot;&quot;) | 0;</div><div class="line"></div><div class="line">pipe(3).double.pow.reverseInt.get; // 63</div></pre></td></tr></table></figure>
+<h4 id="4-使用负值获取数组成员"><a href="#4-使用负值获取数组成员" class="headerlink" title="4. 使用负值获取数组成员"></a>4. 使用负值获取数组成员</h4><p>有些数组方法允许你通过 -1 获取数组最后一个元素，倒数第二个通过 -2 ，我们可以通过重写get方法实现这一点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">function createArray(...elements) &#123;</div><div class="line">  let handler = &#123;</div><div class="line">    get(target, propKey, receiver) &#123;</div><div class="line">      let index = Number(propKey);</div><div class="line">      if (index &lt; 0) &#123;</div><div class="line">        propKey = String(target.length + index);</div><div class="line">      &#125;</div><div class="line">      return Reflect.get(target, propKey, receiver);</div><div class="line">     &#125;</div><div class="line">  &#125;;</div><div class="line">  // 把数组用 proxy 包裹一层</div><div class="line">  let target = [];</div><div class="line">  target.push(...elements);</div><div class="line">  return new Proxy(target, handler);</div><div class="line">&#125;</div><div class="line">let arr = createArray(&apos;a&apos;, &apos;b&apos;, &apos;c&apos;);</div><div class="line">console.log(arr[-1]); // c</div></pre></td></tr></table></figure>
+<p>其他还有各种各样的用法，比如数据绑定、Http Mock、记录日志和执行时间等等，甚至是用纯JS实现DOM。</p>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h3><p>通过ES6的Proxy和Reflect，我们可以实现很多可能性，当然部分还是处于实践中的状态，有问题或者更好的想法，欢迎大家一起来探讨研究。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近稍微花了点时间，抛开业务研究了一下技术。这里结合之前学习过Java的一点经验，简单的谈一下元编程。&lt;/p&gt;
+&lt;h4 id=&quot;1-何谓元编程&quot;&gt;&lt;a href=&quot;#1-何谓元编程&quot; class=&quot;headerlink&quot; title=&quot;1.何谓元编程&quot;&gt;&lt;/a&gt;1.何谓元编
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>使用TypeScript集成React</title>
@@ -202,9 +260,9 @@ let bar: number = (foo as string).length;
     </summary>
     
     
-      <category term="前端" scheme="https://mongoosesong.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
-    
       <category term="React" scheme="https://mongoosesong.github.io/tags/React/"/>
+    
+      <category term="前端" scheme="https://mongoosesong.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
     
   </entry>
   
