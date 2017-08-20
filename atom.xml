@@ -56,11 +56,11 @@
     <title>Git子模块实战</title>
     <link href="https://mongoosesong.github.io/2017/06/20/gitsubmodule/"/>
     <id>https://mongoosesong.github.io/2017/06/20/gitsubmodule/</id>
-    <published>2017-06-20T07:01:54.000Z</published>
-    <updated>2017-08-20T07:04:41.000Z</updated>
+    <published>2017-06-20T07:01:53.000Z</published>
+    <updated>2017-08-20T07:14:20.000Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="一、什么是Git-子模块"><a href="#一、什么是Git-子模块" class="headerlink" title="一、什么是Git 子模块"></a>一、什么是Git 子模块</h3><p>有种情况我们经常会遇到：某个工作中的项目需要包含并使用另一个项目。 也许是第三方库，或者你独立开发的，用于多个父项目的库。 现在问题来了：你想要把它们当做两个独立的项目，同时又想在一个项目中使用另一个。</p>
-<p>我就遇到了这个问题，外部的调度2.0系统已经开发完成了，内部版需要大量复用外部版的代码，苦思冥想很多天，终于发现原生的Git 子模块功能就可以帮忙解决这个问题。下面分享一下我的经验。</p>
+    <content type="html"><![CDATA[<h3 id="一、什么是Git-子模块"><a href="#一、什么是Git-子模块" class="headerlink" title="一、什么是Git 子模块"></a>一、什么是Git 子模块</h3><p>有种情况我们经常会遇到：某个工作中的项目需要包含并使用另一个项目。 也许是第三方库，或者你独立开发的，用于多个父项目的库。 现在问题来了：你想要把它们当做两个独立的项目，同时又想在一个项目中使用另一个.</p>
+<p>我就遇到了这个问题，外部的调度2.0系统已经开发完成了，内部版需要大量复用外部版的代码，苦思冥想很多天，终于发现原生的Git子模块功能就可以帮忙解决这个问题。下面分享一下我的经验。</p>
 <h3 id="二、子模块的创建和拉取"><a href="#二、子模块的创建和拉取" class="headerlink" title="二、子模块的创建和拉取"></a>二、子模块的创建和拉取</h3><h4 id="1-创建"><a href="#1-创建" class="headerlink" title="1. 创建"></a>1. 创建</h4><p>当我有一个Git项目GA，现在想创建一个Git项目GB，GA需要以GB的子模块形式存在，那么在GB项目中，需要通过以下的命令创建GA子模块。</p>
 <pre><code>## GB目录下
 git submodule add ${GA项目地址}
@@ -411,11 +411,11 @@ module.exports = throttle;
   </entry>
   
   <entry>
-    <title>React生命周期</title>
+    <title>React以及React生命周期</title>
     <link href="https://mongoosesong.github.io/2017/04/18/react-lifecycle/"/>
     <id>https://mongoosesong.github.io/2017/04/18/react-lifecycle/</id>
     <published>2017-04-18T11:43:55.000Z</published>
-    <updated>2017-08-20T07:03:03.000Z</updated>
+    <updated>2017-08-20T07:17:36.000Z</updated>
     
     <content type="html"><![CDATA[<p>这篇文章简单总结我使用React以来对其生命周期的一些理解。</p>
 <h2 id="一、React原理"><a href="#一、React原理" class="headerlink" title="一、React原理"></a>一、React原理</h2><p>在介绍React生命周期之前，有必要先介绍一下React框架的基本工作原理，这样再解释起来会更快一点。</p>

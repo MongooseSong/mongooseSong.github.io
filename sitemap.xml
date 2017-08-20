@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://mongoosesong.github.io/2017/04/18/react-lifecycle/</loc>
+    
+    <lastmod>2017-08-20T07:17:36.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://mongoosesong.github.io/2017/06/20/gitsubmodule/</loc>
+    
+    <lastmod>2017-08-20T07:14:20.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://mongoosesong.github.io/2017/05/19/lodash-debounce-throttle/</loc>
     
     <lastmod>2017-08-20T07:06:58.000Z</lastmod>
@@ -16,13 +30,6 @@
   </url>
   
   <url>
-    <loc>https://mongoosesong.github.io/2017/06/20/gitsubmodule/</loc>
-    
-    <lastmod>2017-08-20T07:04:41.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://mongoosesong.github.io/2017/07/13/immutable/</loc>
     
     <lastmod>2017-08-20T07:04:41.000Z</lastmod>
@@ -31,13 +38,6 @@
   
   <url>
     <loc>https://mongoosesong.github.io/2017/05/15/js-metaprog/</loc>
-    
-    <lastmod>2017-08-20T07:03:03.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://mongoosesong.github.io/2017/04/18/react-lifecycle/</loc>
     
     <lastmod>2017-08-20T07:03:03.000Z</lastmod>
     
